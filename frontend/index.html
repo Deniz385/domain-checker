@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Domain Checker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Domain Availability</h1>
+  <div>
+    <input type="text" id="domainInput" placeholder="ex: google.com" />
+    <button onclick="checkDomain()">Search</button>
+  </div>
+  <div id="result"></div>
+
+  <script>
+  async function checkDomain() {
+    const domain = document.getElementById('domainInput').value;
+    const res = await fetch(`http://localhost:3000/check?domain=${domain}`);
+    const data = await res.json();
+    document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+  }
+</script>
+<script>
+  async function checkDomain() {
+    const domain = document.getElementById('domainInput').value;
+    const res = await fetch(`http://localhost:3000/check?domain=${domain}`);
+    const data = await res.json();
+
+    let html = '';
+    if (data.DomainInfo) {
+      if (data.DomainInfo.domainAvailability === "AVAILABLE") {
+        html = `<span style="color:green;font-weight:bold;font-size:1.5em;">${domain} is available ✅</span>`;
+      } else if (data.DomainInfo.domainAvailability === "UNAVAILABLE") {
+        html = `<span style="color:red;font-weight:bold;font-size:1.5em;">${domain} is not available ❌</span>`;
+      } else {
+        html = `<span>${domain}: ${data.DomainInfo.domainAvailability}</span>`;
+      }
+    } else if (data.error) {
+      html = `<span style="color:orange;">Error: ${data.error}</span>`;
+    } else {
+      html = `<span>Unexpected response: ${JSON.stringify(data)}</span>`;
+    }
+
+    document.getElementById('result').innerHTML = html;
+  }
+</script>
+
+</body>
+</html>
